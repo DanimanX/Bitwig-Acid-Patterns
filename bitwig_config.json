@@ -1,0 +1,15 @@
+{
+  "_comentario": "Configuración de carpetas de Bitwig Studio por sistema operativo para sincronización multiplataforma (Linux / Mac / Windows)",
+  "darwin": {
+    "clips_dir": "~/Documents/Bitwig Studio/Library/Clips/Acid_Sequences",
+    "confirmed": true
+  },
+  "linux": {
+    "clips_dir": "~/Bitwig Studio/Library/Clips/Acid_Sequences",
+    "confirmed": true
+  },
+  "windows": {
+    "clips_dir": "~/Documents/Bitwig Studio/Library/Clips/Acid_Sequences",
+    "confirmed": false
+  }
+}
