@@ -101,4 +101,4 @@ Para cambiarla: botón **"Cambiar…"** en la GUI, `python3 generate_all.py --co
 - **Dependencias**: solo la librería estándar de Python 3 ([`midi_core.py`](midi_core.py) no importa nada externo); la GUI necesita `tkinter`.
 - **Salida MIDI**: SMF formato 0, una pista, 480 PPQ, canal 1 (índice 0).
 - **Config perezosa**: importar `midi_core` no lee ni escribe `bitwig_config.json`; la ruta se resuelve al usarla.
-- **Aleatoriedad**: los scripts de bajo (`BassAcid.py`, `BassAcid_Aggressive.py`, `BassAcid_Rush.py`) usan azar sin semilla, así que cada ejecución sobrescribe con contenido distinto.
+- **Aleatoriedad**: los scripts de bajo (`BassAcid.py`, `BassAcid_Aggressive.py`, `BassAcid_Blade.py`, `BassAcid_Rush.py`) generan una variación distinta en cada ejecución y sobrescriben el clip. Usa `--seed <n>` (donde exista) para reproducir una toma concreta.
