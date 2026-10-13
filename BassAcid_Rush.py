@@ -8,7 +8,7 @@ Uso:
     python3 BassAcid_Rush.py
     python3 BassAcid_Rush.py --style all
     python3 BassAcid_Rush.py --style rolling --root F3 --bpm 155
-    python3 BassAcid_Rush.py --style melodic_hook --root 53 --output ./output/Rush_Hook.mid
+    python3 BassAcid_Rush.py --style melodic_hook --root 53 --output ./output/BassAcid_Rush_Melodic_hook.mid
 """
 
 import sys

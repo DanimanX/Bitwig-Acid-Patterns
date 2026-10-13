@@ -33,7 +33,7 @@ mande) para que el 4x4 no se embarre.
 Uso:
     python3 BassAcid_Blade.py
     python3 BassAcid_Blade.py --bpm 155 --root 50
-    python3 BassAcid_Blade.py --bars 4 --root F3 --bpm 153 --output ./output/Blade.mid
+    python3 BassAcid_Blade.py --bars 4 --root F3 --bpm 153 --output ./output/BassAcid_Blade.mid
 """
 
 import sys

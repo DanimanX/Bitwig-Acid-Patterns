@@ -6,7 +6,7 @@ rolling implacable de semicorcheas y acentos extremos.
 
 Uso:
     python3 BassAcid_Aggressive.py
-    python3 BassAcid_Aggressive.py --bpm 155 --root 50 --bars 4 --output ./output/BassAcid_Aggressive.mid
+    python3 BassAcid_Aggressive.py --bpm 155 --root 50 --bars 4 --output ./output/BassAcid_Aggressive_Verknipt.mid
 """
 
 import sys

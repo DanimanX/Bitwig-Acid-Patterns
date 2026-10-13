@@ -6,7 +6,7 @@ más redobles de fill en los compases 2 y 4.
 
 Uso:
     python3 acid_hat_pattern.py
-    python3 acid_hat_pattern.py --bpm 155 --note 42 --output ./output/Acid_HiHat_Rave.mid
+    python3 acid_hat_pattern.py --bpm 155 --note 42 --output ./output/Acid_HiHat_Rave_16ths.mid
 """
 
 import sys

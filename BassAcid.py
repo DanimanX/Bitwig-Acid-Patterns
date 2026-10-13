@@ -5,7 +5,7 @@ Genera groove hipnótico con slides (legato overlap para emuladores 303 y sintes
 
 Uso:
     python3 BassAcid.py
-    python3 BassAcid.py --bpm 155 --root 50 --bars 4 --output ./output/BassAcid.mid
+    python3 BassAcid.py --bpm 155 --root 50 --bars 4 --output ./output/BassAcid_Rolling_303.mid
 """
 
 import sys
