@@ -125,6 +125,25 @@ class AcidGeneratorGUI(tk.Tk):
         )
         root_combo.grid(row=0, column=3, sticky="w", padx=10, pady=4)
 
+        # Estilo de Kick Hard Techno
+        tk.Label(params_frame, text="Variación Kick Hard Techno:", bg="#282828", fg="#E0E0E0").grid(row=1, column=0, sticky="w", pady=4)
+        self.kick_style_var = tk.StringVar(value="hybrid (Evolución 4 compases)")
+        kick_style_combo = ttk.Combobox(
+            params_frame,
+            textvariable=self.kick_style_var,
+            values=[
+                "hybrid (Evolución 4 compases)",
+                "rolling (Rolling Rumble)",
+                "syncopated (Industrial Sincopado)",
+                "stutter (Schranz / Ametralladora)",
+                "offbeat_push (Offbeat Push)",
+                "predrop_break (Pre-Drop Break)"
+            ],
+            width=28,
+            state="readonly"
+        )
+        kick_style_combo.grid(row=1, column=1, columnspan=3, sticky="w", padx=10, pady=4)
+
         # 3. Botones Generadores Individuales
         gens_frame = tk.LabelFrame(
             main_frame,
@@ -242,55 +261,62 @@ class AcidGeneratorGUI(tk.Tk):
         except ValueError:
             root_midi = 50
 
-        return bpm, root_midi
+        kick_style = self.kick_style_var.get().split()[0].lower()
+        return bpm, root_midi, kick_style
 
     def gen_bass_rolling(self):
-        bpm, root_midi = self.get_params()
+        bpm, root_midi, _ = self.get_params()
         out = build_timestamped_filename("01_BassAcid_Rolling_303.mid", directory=SCRIPT_DIR / "output")
         paths, notes = generate_bass_acid(bpm=bpm, root_note=root_midi, output_path=out)
         self.status_var.set(f"OK: Generado '{out.name}' ({notes} notas)")
 
     def gen_bass_aggressive(self):
-        bpm, root_midi = self.get_params()
+        bpm, root_midi, _ = self.get_params()
         out = build_timestamped_filename("02_BassAcid_Aggressive.mid", directory=SCRIPT_DIR / "output")
         paths, notes = generate_bass_acid_aggressive(bpm=bpm, root_note=root_midi, output_path=out)
         self.status_var.set(f"OK: Generado '{out.name}' ({notes} notas)")
 
     def gen_bass_predrop(self):
-        bpm, root_midi = self.get_params()
+        bpm, root_midi, _ = self.get_params()
         out = build_timestamped_filename("03_BassAcid_PreDrop_Build.mid", directory=SCRIPT_DIR / "output")
         paths, notes = generate_bass_acid_predrop(bpm=bpm, root_note=root_midi, output_path=out)
         self.status_var.set(f"OK: Generado '{out.name}' ({notes} notas)")
 
     def gen_kick(self):
-        bpm, _ = self.get_params()
-        out = build_timestamped_filename("04_Acid_Kick_Rumble_4x4.mid", directory=SCRIPT_DIR / "output")
-        paths, mains, ghosts = generate_acid_kick(bpm=bpm, note=36, output_path=out)
-        self.status_var.set(f"OK: Generado '{out.name}' ({mains + ghosts} hits)")
+        bpm, _, kick_style = self.get_params()
+        out = build_timestamped_filename(f"04_Acid_Kick_{kick_style.capitalize()}_4x4.mid", directory=SCRIPT_DIR / "output")
+        paths, mains, ghosts = generate_acid_kick(
+            bpm=bpm,
+            note=36,
+            total_bars=4,
+            style=kick_style,
+            output_path=out
+        )
+        self.status_var.set(f"OK: Generado Kick {kick_style.upper()} '{out.name}' ({mains + ghosts} hits)")
 
     def gen_hats(self):
-        bpm, _ = self.get_params()
+        bpm, _, _ = self.get_params()
         out = build_timestamped_filename("05_Acid_HiHat_Rave.mid", directory=SCRIPT_DIR / "output")
         paths, count = generate_acid_hat(bpm=bpm, note=42, output_path=out)
         self.status_var.set(f"OK: Generado '{out.name}' ({count} hits)")
 
     def gen_all(self):
-        bpm, root_midi = self.get_params()
+        bpm, root_midi, kick_style = self.get_params()
         out_dir = SCRIPT_DIR / "output"
         ts = get_timestamp_prefix()
 
         out1 = build_timestamped_filename("01_BassAcid_Rolling_303.mid", directory=out_dir, timestamp=ts)
         out2 = build_timestamped_filename("02_BassAcid_Aggressive.mid", directory=out_dir, timestamp=ts)
         out3 = build_timestamped_filename("03_BassAcid_PreDrop_Build.mid", directory=out_dir, timestamp=ts)
-        out4 = build_timestamped_filename("04_Acid_Kick_Rumble_4x4.mid", directory=out_dir, timestamp=ts)
+        out4 = build_timestamped_filename(f"04_Acid_Kick_{kick_style.capitalize()}_4x4.mid", directory=out_dir, timestamp=ts)
         out5 = build_timestamped_filename("05_Acid_HiHat_Rave.mid", directory=out_dir, timestamp=ts)
 
         generate_bass_acid(bpm=bpm, root_note=root_midi, output_path=out1)
         generate_bass_acid_aggressive(bpm=bpm, root_note=root_midi, output_path=out2)
         generate_bass_acid_predrop(bpm=bpm, root_note=root_midi, output_path=out3)
-        generate_acid_kick(bpm=bpm, note=36, output_path=out4)
+        generate_acid_kick(bpm=bpm, note=36, total_bars=4, style=kick_style, output_path=out4)
         generate_acid_hat(bpm=bpm, note=42, output_path=out5)
-        self.status_var.set(f"OK: ¡Kit completo generado con prefijo {ts} (5 archivos)!")
+        self.status_var.set(f"OK: ¡Kit completo con Kick {kick_style.upper()} generado con prefijo {ts} (5 archivos)!")
 
     def open_bitwig_folder(self):
         try:
