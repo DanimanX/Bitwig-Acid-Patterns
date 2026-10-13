@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 acid_hat_pattern.py - Generador de Hi-Hats estilo Hard Acid Techno / Rave para Bitwig Studio.
-Basado en acid_hat_pattern.lua (155 BPM, 4 compases, 64 semicorcheas).
 Genera contratiempos marcados (offbeats), rolling galopante de semicorcheas con dinámica y swing/micro-delay,
 más redobles de fill en los compases 2 y 4.
 

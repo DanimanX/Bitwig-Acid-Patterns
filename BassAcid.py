@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 BassAcid.py - Generador de línea de bajo estilo Hard Acid / Rolling 303 para Bitwig Studio.
-Basado en BassAcid.lua (155 BPM, 4 compases, 64 semicorcheas).
 Genera groove hipnótico con slides (legato overlap para emuladores 303 y sintes VST) y acentos de velocidad.
 
 Uso:

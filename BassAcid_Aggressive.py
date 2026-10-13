@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 BassAcid_Aggressive.py - Generador de bajo Hard / Aggressive Acid Techno (Marie Vaunt @ Verknipt style).
-Basado en BassAcid_Aggressive.lua (155 BPM, 4 compases, 64 semicorcheas).
 Intervalos oscuros (D Frigio, Tritono, saltos de octava y doble octava 303 scream),
 rolling implacable de semicorcheas y acentos extremos.
 
