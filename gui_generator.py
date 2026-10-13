@@ -6,7 +6,6 @@ Soporta selección y configuración de carpeta de Clips multiplataforma (macOS, 
 """
 
 import sys
-import subprocess
 from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
@@ -20,7 +19,6 @@ from midi_core import (
     get_bitwig_library_dir,
     set_bitwig_library_dir,
     open_folder,
-    note_name_to_midi,
     get_timestamp_prefix,
     build_timestamped_filename,
 )
@@ -167,27 +165,27 @@ class AcidGeneratorGUI(tk.Tk):
         }
 
         # Bass 303 Rolling
-        b1_btn = tk.Button(gens_frame, text="▶ BassAcid (Rolling 303)", **btn_style, command=self.gen_bass_rolling)
+        b1_btn = tk.Button(gens_frame, text="▶ BassAcid (Rolling 303)", **btn_style, command=self._safe(self.gen_bass_rolling, "BassAcid Rolling 303"))
         b1_btn.grid(row=0, column=0, sticky="ew", padx=4, pady=3)
         tk.Label(gens_frame, text="4 compases con slides legato y acentos", bg="#282828", fg="#AAAAAA").grid(row=0, column=1, sticky="w", padx=8)
 
         # Bass Aggressive
-        b2_btn = tk.Button(gens_frame, text="▶ BassAcid (Aggressive Marie Vaunt)", **btn_style, command=self.gen_bass_aggressive)
+        b2_btn = tk.Button(gens_frame, text="▶ BassAcid (Aggressive Marie Vaunt)", **btn_style, command=self._safe(self.gen_bass_aggressive, "BassAcid Aggressive"))
         b2_btn.grid(row=1, column=0, sticky="ew", padx=4, pady=3)
         tk.Label(gens_frame, text="Frigio/Tritono, screeches agudos de octava", bg="#282828", fg="#AAAAAA").grid(row=1, column=1, sticky="w", padx=8)
 
         # Bass PreDrop
-        b3_btn = tk.Button(gens_frame, text="▶ BassAcid (PreDrop & Silencio)", **btn_style, command=self.gen_bass_predrop)
+        b3_btn = tk.Button(gens_frame, text="▶ BassAcid (PreDrop & Silencio)", **btn_style, command=self._safe(self.gen_bass_predrop, "BassAcid PreDrop"))
         b3_btn.grid(row=2, column=0, sticky="ew", padx=4, pady=3)
         tk.Label(gens_frame, text="Build-up, riser, ametralladora + silencio 2 beats", bg="#282828", fg="#AAAAAA").grid(row=2, column=1, sticky="w", padx=8)
 
         # Kick
-        k_btn = tk.Button(gens_frame, text="▶ Acid Kick (4x4 Rumble)", **btn_style, command=self.gen_kick)
+        k_btn = tk.Button(gens_frame, text="▶ Acid Kick (4x4 Rumble)", **btn_style, command=self._safe(self.gen_kick, "Acid Kick"))
         k_btn.grid(row=3, column=0, sticky="ew", padx=4, pady=3)
         tk.Label(gens_frame, text="Bombo 4x4, ghost kicks para rumble y redoble", bg="#282828", fg="#AAAAAA").grid(row=3, column=1, sticky="w", padx=8)
 
         # Hi-Hats
-        h_btn = tk.Button(gens_frame, text="▶ Acid Hi-Hats (Rave 16ths)", **btn_style, command=self.gen_hats)
+        h_btn = tk.Button(gens_frame, text="▶ Acid Hi-Hats (Rave 16ths)", **btn_style, command=self._safe(self.gen_hats, "Acid Hi-Hats"))
         h_btn.grid(row=4, column=0, sticky="ew", padx=4, pady=3)
         tk.Label(gens_frame, text="Contratiempos abiertos + galope semicorcheas", bg="#282828", fg="#AAAAAA").grid(row=4, column=1, sticky="w", padx=8)
 
@@ -206,7 +204,7 @@ class AcidGeneratorGUI(tk.Tk):
             font=("Helvetica", 11, "bold"),
             bd=2,
             pady=6,
-            command=self.gen_all
+            command=self._safe(self.gen_all, "Kit completo")
         )
         all_btn.pack(fill="x", pady=(0, 8))
 
@@ -248,6 +246,16 @@ class AcidGeneratorGUI(tk.Tk):
             self.clips_dir_path = target
             self.clips_dir_var.set(str(target))
             self.status_var.set(f"✔ Ruta actualizada para {self.os_display}: {target}")
+
+    def _safe(self, action, label):
+        """Envuelve un callback del generador capturando errores y reportándolos en la UI."""
+        def runner():
+            try:
+                action()
+            except Exception as e:
+                self.status_var.set(f"ERROR en {label}: {e}")
+                messagebox.showerror("Error al generar", f"No se pudo generar {label}:\n{e}")
+        return runner
 
     def get_params(self):
         try:

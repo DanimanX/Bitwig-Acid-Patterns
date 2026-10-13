@@ -134,8 +134,6 @@ def generate_acid_kick(
             if style_clean == "rolling" or (style_clean == "hybrid" and bar_idx in [0, 2]):
                 # ROLLING RUMBLE: empuje continuo en semicorcheas 2, 3 y 4 de cada tiempo
                 for beat in range(4):
-                    if style_clean == "predrop_break" and is_last_bar_of_phrase and beat >= 2:
-                        continue
                     if enable_fill and is_last_bar_of_phrase and beat == 3:
                         continue
 

@@ -39,6 +39,23 @@ El proyecto detecta automáticamente el sistema operativo y gestiona las rutas c
 
 ---
 
+## 🎼 Nomenclatura de Notas y Parámetro `--root`
+
+El parámetro `--root` (y `--note` en los patrones de bombo/hi-hat) acepta tres formatos, siempre con la **numeración científica de octavas (Do central C4 = 60, estándar MIDI)**:
+
+| Formato | Ejemplo | Resultado MIDI |
+|---|---|---|
+| Número MIDI | `--root 50` | 50 |
+| Nota (notación científica) | `--root D3` | 50 |
+| Nota con guion (estilo tracker) | `--root D-3` | 50 |
+
+La raíz por defecto, **MIDI 50 = D3**, coincide con el Kick afinado en Re.
+
+> [!IMPORTANT]
+> Los nombres de nota usan **C4 = 60** (Do central). Por tanto `D3` (y `D-3`) = MIDI 50, mientras que `D-2` = MIDI 38. Los scripts `.lua` originales rotulaban MIDI 50 como "D-2" bajo otra convención de octavas (C3 = 60); aquí se unificó a la numeración estándar MIDI.
+
+---
+
 ## 🚀 Modos de Uso
 
 ### 1. Interfaz Gráfica (Recomendado)
@@ -109,6 +126,9 @@ python3 acid_kick_pattern.py --style predrop_break --bars 4
 
 # Hi-Hats (Nota 42 = F#1 Closed Hat)
 python3 acid_hat_pattern.py --bpm 155 --note 42
+
+# La raíz admite número MIDI o nombre de nota (D3 y D-3 equivalen a MIDI 50)
+python3 BassAcid.py --bpm 155 --root D3
 ```
 
 ---
@@ -118,11 +138,11 @@ python3 acid_hat_pattern.py --bpm 155 --note 42
 1. **Abrir Bitwig Studio**.
 2. En el panel navegador de la derecha (o presiona `F1` / abre el navegador de archivos):
    - Ve a **"Clips"** o **"My Library"** -> **"Acid_Sequences"**.
-3. Verás todos los archivos `.mid` generados:
+3. Verás todos los archivos `.mid` generados (con prefijo de fecha/hora `YYYYMMDDHHMM_`):
    - `01_BassAcid_Rolling_303.mid`
    - `02_BassAcid_Aggressive.mid`
    - `03_BassAcid_PreDrop_Build.mid`
-   - `04_Acid_Kick_Rumble_4x4.mid`
+   - `04_Acid_Kick_<Estilo>_4x4.mid` (p. ej. `04_Acid_Kick_Hybrid_4x4.mid`; el estilo depende de `--kick-style`)
    - `05_Acid_HiHat_Rave.mid`
 4. **Arrastra y suelta** cualquier clip directamente sobre una pista de instrumento en la vista *Arranger* o en el *Clip Launcher*.
 
@@ -130,3 +150,20 @@ python3 acid_hat_pattern.py --bpm 155 --note 42
 > **Slides y Acentos 303 en VSTs / Bitwig:**
 > - Los **slides** se programan con solapamiento *legato* (>100% de duración de paso). En sintes como *AudioRealism ABL3*, *D16 Phoscyon 2*, *Arturia Acid V*, *Roland TB-303* o el propio *Polymer* de Bitwig (modo mono con Glide activado), esto activa automáticamente el portamento suave entre notas.
 > - Los **acentos** se activan por velocidad MIDI (127 para acento, 80 para normal, 54 para notas fantasma).
+
+---
+
+## 🔧 Notas Técnicas y Cambios Recientes
+
+**Dependencias:** solo la biblioteca estándar de Python 3. El motor [`midi_core.py`](midi_core.py) no importa nada externo; la GUI requiere `tkinter` (incluido en la mayoría de instalaciones de Python).
+
+**Características del motor MIDI:**
+- Escribe **SMF formato 0** (una sola pista) a 480 PPQ, en el **canal 1** (índice MIDI 0) — compatible con Bitwig y con drum machines.
+- Los **slides** 303 se codifican como solapamiento *legato* (>100% de duración de paso); los **acentos**, vía velocidad MIDI.
+- Nombres de archivo con prefijo `YYYYMMDDHHMM_`; ante colisión dentro del mismo minuto añade un contador incremental (`..._1.mid`, `..._2.mid`) para no sobreescribir.
+
+**Cambios aplicados:**
+- `note_name_to_midi` ahora acepta **cadenas numéricas** (`"50"`) y el **guion como separador** (`"D-3"`); las entradas inválidas lanzan `ValueError` con mensaje claro.
+- Importar `midi_core` **ya no lee ni escribe** `bitwig_config.json` (la ruta de Clips se resuelve de forma perezosa).
+- La GUI captura los errores de generación y los muestra en un diálogo y en la barra de estado.
+- Se eliminó código sin uso (pitch bend no utilizado, ramas inalcanzables y imports sin uso).

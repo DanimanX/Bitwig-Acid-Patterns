@@ -9,7 +9,6 @@ Uso:
     python3 BassAcid.py --bpm 155 --root 50 --bars 4 --output ./output/BassAcid.mid
 """
 
-import os
 import sys
 import random
 import argparse
@@ -30,7 +29,7 @@ from midi_core import (
 
 def generate_bass_acid(
     bpm: float = 155.0,
-    root_note: int = 50,  # D3 / D-2 en rack (MIDI 50)
+    root_note: int = 50,  # D3 (MIDI 50, notación científica C4=60)
     total_bars: int = 4,
     accent_vol: int = 127,
     normal_vol: int = 84,
@@ -43,7 +42,8 @@ def generate_bass_acid(
     seq = MidiSequence(name="BassAcid_Rolling_303", bpm=bpm)
     track = seq.track
 
-    # Escala: D Minor Pentatonic / Acid Box (D-1, D-2, F-2, G-2, G#-2, A-2, C-3, D-3)
+    # Escala: D Minor Pentatonic / Acid Box (offsets en semitonos sobre la raíz D3 = MIDI 50):
+    # -12: D2 (subgrave), 0: D3 (tónica), 0: D3, 3: F3, 5: G3, 6: G#3, 7: A3, 10: C4, 12: D4, 15: F4
     scale_intervals = [-12, 0, 0, 3, 5, 6, 7, 10, 12, 15]
 
     # Generar motivo motriz base de 16 semicorcheas (1 compás)

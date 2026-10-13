@@ -186,7 +186,11 @@ def open_folder(path: Union[str, Path]):
         if os_name == "darwin":
             subprocess.Popen(["open", str(p)])
         elif os_name == "windows":
-            os.startfile(str(p))
+            # os.startfile solo existe en Windows; se resuelve en tiempo de ejecución
+            opener = getattr(os, "startfile", None)
+            if opener is None:
+                raise RuntimeError("os.startfile no está disponible en esta plataforma")
+            opener(str(p))
         else:
             # Linux y BSD
             subprocess.Popen(["xdg-open", str(p)])
@@ -194,15 +198,13 @@ def open_folder(path: Union[str, Path]):
         print(f"[Aviso] No se pudo abrir el explorador de archivos: {e}")
 
 
-# Compatibilidad hacia atrás: variable global evaluada dinámicamente
+# Compatibilidad hacia atrás: BITWIG_LIBRARY_DIR se resuelve de forma perezosa
+# (PEP 562). Importar el módulo NO lee ni escribe bitwig_config.json; la ruta se
+# calcula solo cuando se accede al atributo.
 def __getattr__(name: str):
     if name == "BITWIG_LIBRARY_DIR":
         return get_bitwig_library_dir()
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
-
-
-# Variable inicial estática por conveniencia
-BITWIG_LIBRARY_DIR = get_bitwig_library_dir()
 
 
 def get_timestamp_prefix() -> str:
@@ -216,8 +218,9 @@ def build_timestamped_filename(
     timestamp: Optional[str] = None
 ) -> Path:
     """
-    Construye una ruta con prefijo de timestamp YYYYMMDDHHMM_
-    Si el archivo ya existe en ese mismo minuto, añade segundos o sufijo numérico para no sobreescribir.
+    Construye una ruta con prefijo de timestamp YYYYMMDDHHMM_.
+    Si el archivo ya existe en ese mismo minuto, añade un contador incremental
+    (_1, _2, ...) antes de la extensión para no sobreescribir.
     """
     if timestamp is None:
         timestamp = get_timestamp_prefix()
@@ -225,19 +228,14 @@ def build_timestamped_filename(
         timestamp += "_"
 
     clean_name = base_name if base_name.endswith(".mid") else f"{base_name}.mid"
+    stem = clean_name[:-len(".mid")]
     dir_path = Path(directory) if directory else Path(".")
     dir_path.mkdir(parents=True, exist_ok=True)
 
     target_path = dir_path / f"{timestamp}{clean_name}"
-    if not target_path.exists():
-        return target_path
-
-    # Si ya existe en ese mismo minuto, agregar segundos
-    sec_prefix = datetime.now().strftime("%Y%m%d%H%M%S_")
-    target_path = dir_path / f"{sec_prefix}{clean_name}"
     counter = 1
     while target_path.exists():
-        target_path = dir_path / f"{sec_prefix[:-1]}_{counter}_{clean_name}"
+        target_path = dir_path / f"{timestamp}{stem}_{counter}.mid"
         counter += 1
 
     return target_path
@@ -257,30 +255,37 @@ def encode_vlq(value: int) -> bytes:
 
 def note_name_to_midi(val: Union[str, int]) -> int:
     """
-    Convierte una nota (ej: 'D-2', 'D2', 'C4', 'F#3') o número MIDI a entero (0-127).
-    Soporta formato Renoise y estándar.
+    Convierte una nota o un número MIDI a entero (0-127).
+
+    Acepta:
+      - Entero o cadena numérica: 50, "50" -> 50.
+      - Notación científica (MIDI estándar, C4 = 60): "D3", "C4", "F#3", "Bb2".
+      - La misma notación con guion separador (estilo tracker): "D-3", "C-4".
+
+    La octava usa SIEMPRE la numeración científica (C4 = 60). Por tanto la raíz
+    habitual de estos generadores, MIDI 50, se escribe "D3" (o "D-3").
     """
     if isinstance(val, int):
         return max(0, min(127, val))
 
-    s = str(val).strip().upper().replace("-", "")
+    s = str(val).strip().upper()
+
+    # Cadena numérica directa (p. ej. "50")
+    if s.lstrip("+-").isdigit():
+        return max(0, min(127, int(s)))
+
     notes = {"C": 0, "C#": 1, "DB": 1, "D": 2, "D#": 3, "EB": 3,
              "E": 4, "F": 5, "F#": 6, "GB": 6, "G": 7, "G#": 8,
              "AB": 8, "A": 9, "A#": 10, "BB": 10, "B": 11}
 
-    name = ""
-    octave_str = ""
-    for ch in s:
-        if ch.isalpha() or ch == "#":
-            name += ch
-        elif ch.isdigit() or ch == "-":
-            octave_str += ch
+    # El guion es solo un separador opcional entre nota y octava ("D-3" == "D3")
+    name = "".join(ch for ch in s if ch.isalpha() or ch == "#")
+    octave_str = "".join(ch for ch in s if ch.isdigit())
 
     if name in notes and octave_str:
         octave = int(octave_str)
-        # Estándar MIDI: C4 = 60 (octava 4 -> 12 * 5)
-        midi_num = (octave + 1) * 12 + notes[name]
-        return max(0, min(127, midi_num))
+        # MIDI estándar: C4 = 60
+        return max(0, min(127, (octave + 1) * 12 + notes[name]))
 
     raise ValueError(f"Formato de nota desconocido: {val}")
 
@@ -321,14 +326,6 @@ class MidiTrack:
         self.events.append((tick, note_on))
         self.events.append((tick + duration_ticks, note_off))
 
-    def add_pitch_bend(self, tick: int, value: int, channel: int = 0):
-        """Valor de pitch bend entre -8192 y +8191 (centro: 0)."""
-        ch = channel & 0x0F
-        val_centered = max(0, min(16383, value + 8192))
-        lsb = val_centered & 0x7F
-        msb = (val_centered >> 7) & 0x7F
-        self.events.append((tick, bytes([0xE0 | ch, lsb, msb])))
-
     def build_track_chunk(self) -> bytes:
         def sort_key(item):
             tick, data = item
@@ -354,7 +351,7 @@ class MidiTrack:
 
 
 class MidiSequence:
-    """Contenedor de secuencia MIDI formato 0 o 1 listo para exportar."""
+    """Contenedor de secuencia MIDI (SMF formato 0, una sola pista) listo para exportar."""
 
     def __init__(self, name: str = "Acid Sequence", bpm: float = 155.0):
         self.name = name

@@ -50,8 +50,8 @@ def generate_bass_acid_predrop(
     # COMPÁS 1 (Semicorcheas 1-16): ESPACIO Y TENSIÓN INICIAL
     # =========================================================================
     bar1_hits = [
-        {"step": 1,  "offset": -12, "vol": 80},  # Subgrave D-1
-        {"step": 5,  "offset": 0,   "vol": 75},  # D-2
+        {"step": 1,  "offset": -12, "vol": 80},  # Subgrave D2 (-12)
+        {"step": 5,  "offset": 0,   "vol": 75},  # Tónica D3 (0)
         {"step": 9,  "offset": 7,   "vol": 85},  # A-2
         {"step": 13, "offset": 6,   "vol": 90},  # G#2 tritono disonante
     ]
