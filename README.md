@@ -32,7 +32,7 @@ El proyecto detecta automáticamente el sistema operativo y gestiona las rutas c
 | [`BassAcid.py`](BassAcid.py) | `BassAcid.lua` | **Rolling 303 clásico**: Escala pentatónica menor en Re, huecos en el beat para dejar pegar el Kick, acentos de volumen y slides (legato overlap). Fill en el compás 4. |
 | [`BassAcid_Aggressive.py`](BassAcid_Aggressive.py) | `BassAcid_Aggressive.lua` | **Hard Acid estilo Marie Vaunt / Verknipt**: Intervalos frigios y de tritono, acentos extremos (127 vs 80 vs 54), screeches de doble octava (+24 semitonos) y fill ametralladora. |
 | [`BassAcid_PreDrop.py`](BassAcid_PreDrop.py) | `BassAcid_PreDrop.lua` | **Build-up & Pre-Drop**: Tensión espaciada en compás 1, rolling en compás 2, riser ascendente de 2 octavas en compás 3, ráfaga ametralladora en compás 4 y **silencio absoluto en los últimos 2 tiempos** antes del drop. |
-| [`acid_kick_pattern.py`](acid_kick_pattern.py) | `acid_kick_pattern.lua` | **Kick 4x4 + Rumble**: Bombos pesados en cada tiempo, ghost kicks en la semicorchea previa al beat para empuje *rolling rumble*, y redoble de fill final. |
+| [`acid_kick_pattern.py`](acid_kick_pattern.py) | `acid_kick_pattern.lua` | **Hard Techno Kick Dinámico (4 compases)**: Fraseo evolutivo de 4 compases, micro-humanización (timing y velocity), ghost/rumble notes y 6 estilos de Hard Techno (`hybrid`, `rolling`, `syncopated`, `stutter`, `offbeat_push`, `predrop_break`). |
 | [`acid_hat_pattern.py`](acid_hat_pattern.py) | `acid_hat_pattern.lua` | **Hi-Hats Rave / Festival**: Contratiempos abiertos potentes (offbeats), galope de semicorcheas con micro-delay analógico (swing) y redobles en compases 2 y 4. |
 | [`generate_all.py`](generate_all.py) | — | **Generador Maestro**: Genera el kit completo de los 5 patrones de una sola vez o con múltiples variaciones. |
 | [`gui_generator.py`](gui_generator.py) | — | **Interfaz Gráfica de Escritorio**: Ventana interactiva con selector de SO, botón de cambio de carpeta y ajuste de BPM / tono. |
@@ -54,9 +54,9 @@ Haz clic en cualquier botón o en **"GENERAR KIT COMPLETO"** para crear las secu
 ```bash
 python3 generate_all.py
 ```
-O con parámetros personalizados:
+O con parámetros personalizados y estilo de bombo:
 ```bash
-python3 generate_all.py --bpm 155 --root 50 --variations 3
+python3 generate_all.py --bpm 155 --root 50 --kick-style stutter --variations 3
 ```
 
 Reconfigurar la carpeta de Clips:
@@ -66,7 +66,20 @@ python3 generate_all.py --configure
 
 ---
 
-### 3. Generar Patrones Individuales
+### 3. Variaciones de Kick Hard Techno Disponibles
+
+| Estilo | Flag | Descripción Musical |
+|---|---|---|
+| **Híbrido Evolutivo** *(default)* | `--style hybrid` | Progresión completa de 4 compases: base sólida (compás 1), síncopa en semicorchea 6 (compás 2), máxima tensión (compás 3) y redoble ametralladora en fusas (*32nd notes*) en compás 4. |
+| **Rolling Rumble** | `--style rolling` | Sub-kick continuo en semicorcheas (pasos 2, 3 y 4 de cada tiempo) con velocidades escalonadas para el clásico efecto *rolling bassline*. |
+| **Síncopa Industrial** | `--style syncopated` | Dobles golpes de bombo en contratiempos (pasos 6 y 14) con cross-accents en compases pares. |
+| **Schranz Stutter** | `--style stutter` | Ráfagas de fusas ultra rápidas (ráfagas ametralladora de 4 notas en *32nd notes*) en compases 2 y 4 (estilo *Verknipt / Klangkuenstler*). |
+| **Offbeat Push** | `--style offbeat_push` | Bombos contundentes en las corcheas a contratiempo (pasos 2, 6, 10, 14) que empujan el groove hacia adelante. |
+| **Pre-Drop Break** | `--style predrop_break` | Compases 1 al 3 a máxima potencia y compás 4 con **silencio absoluto en los últimos 2 tiempos** antes del drop. |
+
+---
+
+### 4. Generar Patrones Individuales
 
 ```bash
 # Bajo 303 Rolling
@@ -78,8 +91,21 @@ python3 BassAcid_Aggressive.py --bpm 155 --root 50
 # Pre-Drop con silencio
 python3 BassAcid_PreDrop.py --bpm 155 --root 50
 
-# Kick 4x4 (Nota 36 = C1 en Drum Machine)
-python3 acid_kick_pattern.py --bpm 155 --note 36
+# Kick Hard Techno dinámico (Estilo híbrido por defecto, 4 compases)
+python3 acid_kick_pattern.py --style hybrid --bars 4 --bpm 155
+
+# Kick con Rumble continuo (Rolling)
+python3 acid_kick_pattern.py --style rolling --bars 4
+
+# Kick con ráfagas Schranz / Stutter (fusas / semicorcheas rápidas)
+python3 acid_kick_pattern.py --style stutter --bars 4
+
+# Kick Sincopado o con contratiempos pesados (Offbeat Push)
+python3 acid_kick_pattern.py --style syncopated --bars 4
+python3 acid_kick_pattern.py --style offbeat_push --bars 4
+
+# Kick de Pre-Drop (silencio en compás 4 antes del drop)
+python3 acid_kick_pattern.py --style predrop_break --bars 4
 
 # Hi-Hats (Nota 42 = F#1 Closed Hat)
 python3 acid_hat_pattern.py --bpm 155 --note 42
