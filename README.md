@@ -1,6 +1,6 @@
 # Bitwig Studio — Generador de Secuencias MIDI Acid Techno (155 BPM)
 
-Scripts que replican y extienden la lógica de los scripts de Renoise (`.lua`) para **Bitwig Studio**. Generan clips `.mid` de bajo ácido, bombo y hi-hats (SMF formato 0, 480 PPQ).
+Scripts que generan clips `.mid` de bajo ácido, bombo y hi-hats para **Bitwig Studio** (SMF formato 0, 480 PPQ).
 
 Cada script escribe el clip en dos sitios:
 
@@ -9,20 +9,18 @@ Cada script escribe el clip en dos sitios:
 
 El nombre sigue el formato `YYYYMMDDHHMM_<nombre>.mid`: **un archivo por script**. Si repites dentro del mismo minuto, se sobrescribe.
 
-Los scripts marcados **+ `.lua`** tienen su gemelo original para Renoise.
-
 ---
 
 ## Scripts
 
 | Script | Genera |
 |---|---|
-| [`BassAcid.py`](BassAcid.py) + `.lua` | **Rolling 303** clásico: pentatónica menor en Re, huecos en el beat para el kick, acentos y slides. Fill en el compás 4. |
-| [`BassAcid_Aggressive.py`](BassAcid_Aggressive.py) + `.lua` | **Hard Acid (Marie Vaunt / Verknipt)**: frigio y tritono, acentos extremos, screams de doble octava (+24) y fill ametralladora. |
-| [`BassAcid_Blade.py`](BassAcid_Blade.py) + `.lua` | **Blade (16 notas)**: un compás con 16 semicorcheas sin huecos, al estilo del acid techno de *Blade* (1998) / New Order – "Confusion" (Pump Panel Reconstruction Mix). Acentos en los 4 pulsos, stabs de octava y quinta con slide, espiral ascendente final. |
+| [`BassAcid.py`](BassAcid.py) | **Rolling 303** clásico: pentatónica menor en Re, huecos en el beat para el kick, acentos y slides. Fill en el compás 4. |
+| [`BassAcid_Aggressive.py`](BassAcid_Aggressive.py) | **Hard Acid (Marie Vaunt / Verknipt)**: frigio y tritono, acentos extremos, screams de doble octava (+24) y fill ametralladora. |
+| [`BassAcid_Blade.py`](BassAcid_Blade.py) | **Blade (16 notas)**: un compás con 16 semicorcheas sin huecos, al estilo del acid techno de *Blade* (1998) / New Order – "Confusion" (Pump Panel Reconstruction Mix). Acentos en los 4 pulsos, stabs de octava y quinta con slide, espiral ascendente final. |
 | [`BassAcid_Rush.py`](BassAcid_Rush.py) | **KI/KI @ Elementenstraat**: 4 variaciones (`rolling`, `melodic_hook`, `octave_screamer`, `climax_drop`), galopes de 16ths y rebotes de octava. |
-| [`acid_kick_pattern.py`](acid_kick_pattern.py) + `.lua` | **Kick Hard Techno** de 4 compases: fraseo evolutivo, humanización, ghost/rumble y 6 estilos (ver abajo). |
-| [`acid_hat_pattern.py`](acid_hat_pattern.py) + `.lua` | **Hi-Hats Rave**: offbeats abiertos, galope de semicorcheas con swing y redobles en compases 2 y 4. |
+| [`acid_kick_pattern.py`](acid_kick_pattern.py) | **Kick Hard Techno** de 4 compases: fraseo evolutivo, humanización, ghost/rumble y 6 estilos (ver abajo). |
+| [`acid_hat_pattern.py`](acid_hat_pattern.py) | **Hi-Hats Rave**: offbeats abiertos, galope de semicorcheas con swing y redobles en compases 2 y 4. |
 | [`generate_all.py`](generate_all.py) | **Generador maestro**: el kit completo de 6 clips de una sola vez. |
 | [`gui_generator.py`](gui_generator.py) | **GUI (tkinter)**: botones por patrón, kit completo, selector de SO / BPM / tono y carpeta de Clips. |
 
@@ -69,7 +67,7 @@ python3 acid_hat_pattern.py --bpm 155 --note 42             # 42 = F#1 closed ha
 
 `--root` (y `--note`) acepta número MIDI o nombre de nota, con **C4 = 60** (Do central): `50` = `D3` = `D-3`.
 
-La raíz por defecto es **MIDI 50 = D3**, afinada con el kick en Re. Los `.lua` originales rotulaban MIDI 50 como "D-2" (convención C3 = 60); aquí se unificó al estándar MIDI.
+La raíz por defecto es **MIDI 50 = D3**, afinada con el kick en Re.
 
 ---
 
