@@ -31,6 +31,7 @@ from midi_core import (
 from BassAcid import generate_bass_acid
 from BassAcid_Aggressive import generate_bass_acid_aggressive
 from BassAcid_PreDrop import generate_bass_acid_predrop
+from BassAcid_Rush import generate_bass_acid_rush
 from acid_kick_pattern import generate_acid_kick
 from acid_hat_pattern import generate_acid_hat
 
@@ -41,7 +42,9 @@ def generate_full_kit(
     variations: int = 1,
     use_timestamp: bool = True,
     custom_clips_dir: str = None,
-    kick_style: str = "hybrid"
+    kick_style: str = "hybrid",
+    include_rush: bool = True,
+    rush_style: str = "rolling"
 ):
     output_dir = SCRIPT_DIR / "output"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -115,7 +118,21 @@ def generate_full_kit(
             note=42,
             output_path=h_out
         )
-        print(f"  [5/5] {h_out.name} ({h_hits} hits)\n")
+        print(f"  [5/6] {h_out.name} ({h_hits} hits)")
+
+        # 6. BassAcid Rush (KI/KI @ Elementenstraat 1:17:04 style)
+        if include_rush:
+            r_out = build_timestamped_filename(f"06_BassAcid_Rush_{rush_style.capitalize()}{suffix}.mid", directory=output_dir, timestamp=ts) if use_timestamp else output_dir / f"06_BassAcid_Rush_{rush_style.capitalize()}{suffix}.mid"
+            r_paths, r_notes = generate_bass_acid_rush(
+                bpm=bpm,
+                root_note=root_midi,
+                style=rush_style,
+                total_bars=4,
+                output_path=r_out
+            )
+            print(f"  [6/6] {r_out.name} ({r_notes} notas - Estilo {rush_style})\n")
+        else:
+            print()
 
     print("[COMPLETADO] Todos los clips MIDI están disponibles:")
     print(f"  1. En Bitwig Studio: Abre el navegador lateral -> 'My Library' / 'Clips' -> 'Acid_Sequences'")
@@ -132,6 +149,10 @@ def main():
     parser.add_argument("--kick-style", type=str, default="hybrid",
                         choices=["hybrid", "rolling", "syncopated", "stutter", "offbeat_push", "predrop_break"],
                         help="Estilo del Kick: hybrid, rolling, syncopated, stutter, offbeat_push, predrop_break")
+    parser.add_argument("--rush-style", type=str, default="rolling",
+                        choices=["rolling", "melodic_hook", "octave_screamer", "climax_drop"],
+                        help="Estilo para BassAcid Rush (KI/KI 1:17:04): rolling, melodic_hook, octave_screamer, climax_drop")
+    parser.add_argument("--no-rush", action="store_true", help="Omitir generación del patrón BassAcid Rush")
     parser.add_argument("--configure", action="store_true", help="Preguntar y configurar la carpeta de Bitwig Clips para el SO actual")
     parser.add_argument("--clips-dir", type=str, default=None, help="Especificar una ruta personalizada para los Clips de Bitwig")
 
@@ -151,7 +172,9 @@ def main():
         root_midi=root_midi,
         variations=args.variations,
         custom_clips_dir=args.clips_dir,
-        kick_style=args.kick_style
+        kick_style=args.kick_style,
+        include_rush=(not args.no_rush),
+        rush_style=args.rush_style
     )
 
 

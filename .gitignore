@@ -147,3 +147,15 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary duplicate Bitwig folder
+Bitwig/
+
+# Generated MIDI outputs
+output/*.mid
+!output/202610121756_*.mid

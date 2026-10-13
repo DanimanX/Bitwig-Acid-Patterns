@@ -32,10 +32,11 @@ El proyecto detecta automáticamente el sistema operativo y gestiona las rutas c
 | [`BassAcid.py`](BassAcid.py) | `BassAcid.lua` | **Rolling 303 clásico**: Escala pentatónica menor en Re, huecos en el beat para dejar pegar el Kick, acentos de volumen y slides (legato overlap). Fill en el compás 4. |
 | [`BassAcid_Aggressive.py`](BassAcid_Aggressive.py) | `BassAcid_Aggressive.lua` | **Hard Acid estilo Marie Vaunt / Verknipt**: Intervalos frigios y de tritono, acentos extremos (127 vs 80 vs 54), screeches de doble octava (+24 semitonos) y fill ametralladora. |
 | [`BassAcid_PreDrop.py`](BassAcid_PreDrop.py) | `BassAcid_PreDrop.lua` | **Build-up & Pre-Drop**: Tensión espaciada en compás 1, rolling en compás 2, riser ascendente de 2 octavas en compás 3, ráfaga ametralladora en compás 4 y **silencio absoluto en los últimos 2 tiempos** antes del drop. |
+| [`BassAcid_Rush.py`](BassAcid_Rush.py) | — | **Estilo KI/KI @ Elementenstraat (Aeryeen "Rush", 1:17:04)**: 4 variaciones eufóricas de Fast Acid Trance / Neo-Acid (`rolling`, `melodic_hook`, `octave_screamer`, `climax_drop`), galopes continuos de 16ths, rebote de octavas y slides 303. |
 | [`acid_kick_pattern.py`](acid_kick_pattern.py) | `acid_kick_pattern.lua` | **Hard Techno Kick Dinámico (4 compases)**: Fraseo evolutivo de 4 compases, micro-humanización (timing y velocity), ghost/rumble notes y 6 estilos de Hard Techno (`hybrid`, `rolling`, `syncopated`, `stutter`, `offbeat_push`, `predrop_break`). |
 | [`acid_hat_pattern.py`](acid_hat_pattern.py) | `acid_hat_pattern.lua` | **Hi-Hats Rave / Festival**: Contratiempos abiertos potentes (offbeats), galope de semicorcheas con micro-delay analógico (swing) y redobles en compases 2 y 4. |
-| [`generate_all.py`](generate_all.py) | — | **Generador Maestro**: Genera el kit completo de los 5 patrones de una sola vez o con múltiples variaciones. |
-| [`gui_generator.py`](gui_generator.py) | — | **Interfaz Gráfica de Escritorio**: Ventana interactiva con selector de SO, botón de cambio de carpeta y ajuste de BPM / tono. |
+| [`generate_all.py`](generate_all.py) | — | **Generador Maestro**: Genera el kit completo de 6 secuencias de una sola vez o con múltiples variaciones. |
+| [`gui_generator.py`](gui_generator.py) | — | **Interfaz Gráfica de Escritorio**: Ventana interactiva con selector de SO, botón de cambio de carpeta y ajuste de BPM / tono / estilos. |
 
 ---
 
@@ -107,6 +108,16 @@ python3 BassAcid_Aggressive.py --bpm 155 --root 50
 
 # Pre-Drop con silencio
 python3 BassAcid_PreDrop.py --bpm 155 --root 50
+
+# Bajo Acid estilo KI/KI @ Warehouse Elementenstraat (Aeryeen "Rush", 1:17:04):
+# Pack con las 4 variaciones (Rolling, Hook, Screamer, Climax Drop):
+python3 BassAcid_Rush.py --style all --root F3 --bpm 153
+
+# Variaciones individuales:
+python3 BassAcid_Rush.py --style rolling --root F3 --bpm 153
+python3 BassAcid_Rush.py --style melodic_hook --root F3 --bpm 153
+python3 BassAcid_Rush.py --style octave_screamer --root F3 --bpm 153
+python3 BassAcid_Rush.py --style climax_drop --root F3 --bpm 153
 
 # Kick Hard Techno dinámico (Estilo híbrido por defecto, 4 compases)
 python3 acid_kick_pattern.py --style hybrid --bars 4 --bpm 155

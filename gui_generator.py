@@ -25,6 +25,7 @@ from midi_core import (
 from BassAcid import generate_bass_acid
 from BassAcid_Aggressive import generate_bass_acid_aggressive
 from BassAcid_PreDrop import generate_bass_acid_predrop
+from BassAcid_Rush import generate_bass_acid_rush, generate_all_rush_variations, RUSH_STYLES
 from acid_kick_pattern import generate_acid_kick
 from acid_hat_pattern import generate_acid_hat
 
@@ -36,8 +37,8 @@ class AcidGeneratorGUI(tk.Tk):
         self.os_display = get_os_display_name(self.os_name)
 
         self.title(f"Bitwig Acid MIDI Generator [{self.os_display}] - by DanimanX (155 BPM)")
-        self.geometry("660x600")
-        self.minsize(620, 560)
+        self.geometry("680x670")
+        self.minsize(640, 620)
         self.configure(bg="#1E1E1E")
 
         self.clips_dir_path = get_bitwig_library_dir()
@@ -117,8 +118,8 @@ class AcidGeneratorGUI(tk.Tk):
         root_combo = ttk.Combobox(
             params_frame,
             textvariable=self.root_var,
-            values=["38 (D2)", "50 (D3 / Re)", "48 (C3)", "45 (A2)", "43 (G2)"],
-            width=14,
+            values=["53 (F3 / Fa - Rush)", "50 (D3 / Re)", "38 (D2)", "48 (C3)", "45 (A2)", "43 (G2)"],
+            width=18,
             state="readonly"
         )
         root_combo.grid(row=0, column=3, sticky="w", padx=10, pady=4)
@@ -141,6 +142,24 @@ class AcidGeneratorGUI(tk.Tk):
             state="readonly"
         )
         kick_style_combo.grid(row=1, column=1, columnspan=3, sticky="w", padx=10, pady=4)
+
+        # Estilo de BassAcid Rush (KI/KI 1:17:04)
+        tk.Label(params_frame, text="Estilo Bass Rush (KI/KI 1:17:04):", bg="#282828", fg="#E0E0E0").grid(row=2, column=0, sticky="w", pady=4)
+        self.rush_style_var = tk.StringVar(value="rolling (Galope hipnótico)")
+        rush_style_combo = ttk.Combobox(
+            params_frame,
+            textvariable=self.rush_style_var,
+            values=[
+                "rolling (Galope hipnótico)",
+                "melodic_hook (Hook eufórico trance-acid)",
+                "octave_screamer (Squelch & Octave Screamer)",
+                "climax_drop (Clímax pre-drop 4 compases)",
+                "all (Pack 4 variaciones completas)"
+            ],
+            width=28,
+            state="readonly"
+        )
+        rush_style_combo.grid(row=2, column=1, columnspan=3, sticky="w", padx=10, pady=4)
 
         # 3. Botones Generadores Individuales
         gens_frame = tk.LabelFrame(
@@ -188,6 +207,11 @@ class AcidGeneratorGUI(tk.Tk):
         h_btn = tk.Button(gens_frame, text="▶ Acid Hi-Hats (Rave 16ths)", **btn_style, command=self._safe(self.gen_hats, "Acid Hi-Hats"))
         h_btn.grid(row=4, column=0, sticky="ew", padx=4, pady=3)
         tk.Label(gens_frame, text="Contratiempos abiertos + galope semicorcheas", bg="#282828", fg="#AAAAAA").grid(row=4, column=1, sticky="w", padx=8)
+
+        # Bass Rush (KI/KI 1:17:04 Style)
+        b4_btn = tk.Button(gens_frame, text="▶ BassAcid Rush (KI/KI 1:17:04)", **btn_style, command=self._safe(self.gen_bass_rush, "BassAcid Rush"))
+        b4_btn.grid(row=5, column=0, sticky="ew", padx=4, pady=3)
+        tk.Label(gens_frame, text="Estilo Aeryeen 'Rush', 4 variaciones (Rolling/Hook/Scream/Drop)", bg="#282828", fg="#AAAAAA").grid(row=5, column=1, sticky="w", padx=8)
 
         gens_frame.grid_columnconfigure(0, weight=1)
 
@@ -270,28 +294,29 @@ class AcidGeneratorGUI(tk.Tk):
             root_midi = 50
 
         kick_style = self.kick_style_var.get().split()[0].lower()
-        return bpm, root_midi, kick_style
+        rush_style = self.rush_style_var.get().split()[0].lower()
+        return bpm, root_midi, kick_style, rush_style
 
     def gen_bass_rolling(self):
-        bpm, root_midi, _ = self.get_params()
+        bpm, root_midi, _, _ = self.get_params()
         out = build_timestamped_filename("01_BassAcid_Rolling_303.mid", directory=SCRIPT_DIR / "output")
         paths, notes = generate_bass_acid(bpm=bpm, root_note=root_midi, output_path=out)
         self.status_var.set(f"OK: Generado '{out.name}' ({notes} notas)")
 
     def gen_bass_aggressive(self):
-        bpm, root_midi, _ = self.get_params()
+        bpm, root_midi, _, _ = self.get_params()
         out = build_timestamped_filename("02_BassAcid_Aggressive.mid", directory=SCRIPT_DIR / "output")
         paths, notes = generate_bass_acid_aggressive(bpm=bpm, root_note=root_midi, output_path=out)
         self.status_var.set(f"OK: Generado '{out.name}' ({notes} notas)")
 
     def gen_bass_predrop(self):
-        bpm, root_midi, _ = self.get_params()
+        bpm, root_midi, _, _ = self.get_params()
         out = build_timestamped_filename("03_BassAcid_PreDrop_Build.mid", directory=SCRIPT_DIR / "output")
         paths, notes = generate_bass_acid_predrop(bpm=bpm, root_note=root_midi, output_path=out)
         self.status_var.set(f"OK: Generado '{out.name}' ({notes} notas)")
 
     def gen_kick(self):
-        bpm, _, kick_style = self.get_params()
+        bpm, _, kick_style, _ = self.get_params()
         out = build_timestamped_filename(f"04_Acid_Kick_{kick_style.capitalize()}_4x4.mid", directory=SCRIPT_DIR / "output")
         paths, mains, ghosts = generate_acid_kick(
             bpm=bpm,
@@ -303,13 +328,23 @@ class AcidGeneratorGUI(tk.Tk):
         self.status_var.set(f"OK: Generado Kick {kick_style.upper()} '{out.name}' ({mains + ghosts} hits)")
 
     def gen_hats(self):
-        bpm, _, _ = self.get_params()
+        bpm, _, _, _ = self.get_params()
         out = build_timestamped_filename("05_Acid_HiHat_Rave.mid", directory=SCRIPT_DIR / "output")
         paths, count = generate_acid_hat(bpm=bpm, note=42, output_path=out)
         self.status_var.set(f"OK: Generado '{out.name}' ({count} hits)")
 
+    def gen_bass_rush(self):
+        bpm, root_midi, _, rush_style = self.get_params()
+        if rush_style == "all":
+            pack = generate_all_rush_variations(bpm=bpm, root_note=root_midi)
+            self.status_var.set(f"OK: ¡Pack BassAcid Rush generado (4 variaciones)!")
+        else:
+            out = build_timestamped_filename(f"06_BassAcid_Rush_{rush_style.capitalize()}.mid", directory=SCRIPT_DIR / "output")
+            paths, notes = generate_bass_acid_rush(bpm=bpm, root_note=root_midi, style=rush_style, output_path=out)
+            self.status_var.set(f"OK: Generado Rush '{out.name}' ({notes} notas - Estilo {rush_style})")
+
     def gen_all(self):
-        bpm, root_midi, kick_style = self.get_params()
+        bpm, root_midi, kick_style, rush_style = self.get_params()
         out_dir = SCRIPT_DIR / "output"
         ts = get_timestamp_prefix()
 
@@ -318,13 +353,16 @@ class AcidGeneratorGUI(tk.Tk):
         out3 = build_timestamped_filename("03_BassAcid_PreDrop_Build.mid", directory=out_dir, timestamp=ts)
         out4 = build_timestamped_filename(f"04_Acid_Kick_{kick_style.capitalize()}_4x4.mid", directory=out_dir, timestamp=ts)
         out5 = build_timestamped_filename("05_Acid_HiHat_Rave.mid", directory=out_dir, timestamp=ts)
+        active_rush = "rolling" if rush_style == "all" else rush_style
+        out6 = build_timestamped_filename(f"06_BassAcid_Rush_{active_rush.capitalize()}.mid", directory=out_dir, timestamp=ts)
 
         generate_bass_acid(bpm=bpm, root_note=root_midi, output_path=out1)
         generate_bass_acid_aggressive(bpm=bpm, root_note=root_midi, output_path=out2)
         generate_bass_acid_predrop(bpm=bpm, root_note=root_midi, output_path=out3)
         generate_acid_kick(bpm=bpm, note=36, total_bars=4, style=kick_style, output_path=out4)
         generate_acid_hat(bpm=bpm, note=42, output_path=out5)
-        self.status_var.set(f"OK: ¡Kit completo con Kick {kick_style.upper()} generado con prefijo {ts} (5 archivos)!")
+        generate_bass_acid_rush(bpm=bpm, root_note=root_midi, style=active_rush, output_path=out6)
+        self.status_var.set(f"OK: ¡Kit completo (6 pistas con BassAcid Rush) generado con prefijo {ts}!")
 
     def open_bitwig_folder(self):
         try:
