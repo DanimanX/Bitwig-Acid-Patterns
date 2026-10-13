@@ -40,7 +40,8 @@ def generate_full_kit(
     root_midi: int = 50,
     variations: int = 1,
     use_timestamp: bool = True,
-    custom_clips_dir: str = None
+    custom_clips_dir: str = None,
+    kick_style: str = "hybrid"
 ):
     output_dir = SCRIPT_DIR / "output"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -57,8 +58,9 @@ def generate_full_kit(
     print("=" * 65)
     print(f"Sistema Operativo: {os_display} ({os_name})")
     print(f"Tempo: {bpm} BPM | Nota Raíz: {root_midi} | Variaciones: {variations}")
-    print(f"Destino local:   {output_dir}")
-    print(f"Destino Bitwig:  {active_clips_dir}\n")
+    print(f"Estilo de Kick:    {kick_style.upper()} (Compases de 4 dinámicos)")
+    print(f"Destino local:     {output_dir}")
+    print(f"Destino Bitwig:    {active_clips_dir}\n")
 
     for v in range(1, variations + 1):
         suffix = f"_var{v}" if variations > 1 else ""
@@ -95,11 +97,13 @@ def generate_full_kit(
         )
         print(f"  [3/5] {b3_out.name} ({b3_notes} notas)")
 
-        # 4. Acid Kick (4x4 Rumble)
-        k_out = build_timestamped_filename(f"04_Acid_Kick_Rumble_4x4{suffix}.mid", directory=output_dir, timestamp=ts) if use_timestamp else output_dir / f"04_Acid_Kick_Rumble_4x4{suffix}.mid"
+        # 4. Acid Kick (Hard Techno dinámico según estilo)
+        k_out = build_timestamped_filename(f"04_Acid_Kick_{kick_style.capitalize()}_4x4{suffix}.mid", directory=output_dir, timestamp=ts) if use_timestamp else output_dir / f"04_Acid_Kick_{kick_style.capitalize()}_4x4{suffix}.mid"
         k_paths, k_main, k_ghost = generate_acid_kick(
             bpm=bpm,
             note=36,
+            total_bars=4,
+            style=kick_style,
             output_path=k_out
         )
         print(f"  [4/5] {k_out.name} ({k_main + k_ghost} hits)")
@@ -125,6 +129,9 @@ def main():
     parser.add_argument("--bpm", type=float, default=155.0, help="Tempo en BPM (default: 155.0)")
     parser.add_argument("--root", type=str, default="50", help="Nota raíz MIDI o nombre (default: 50 / D3)")
     parser.add_argument("--variations", type=int, default=1, help="Número de variaciones a generar (default: 1)")
+    parser.add_argument("--kick-style", type=str, default="hybrid",
+                        choices=["hybrid", "rolling", "syncopated", "stutter", "offbeat_push", "predrop_break"],
+                        help="Estilo del Kick: hybrid, rolling, syncopated, stutter, offbeat_push, predrop_break")
     parser.add_argument("--configure", action="store_true", help="Preguntar y configurar la carpeta de Bitwig Clips para el SO actual")
     parser.add_argument("--clips-dir", type=str, default=None, help="Especificar una ruta personalizada para los Clips de Bitwig")
 
@@ -143,7 +150,8 @@ def main():
         bpm=args.bpm,
         root_midi=root_midi,
         variations=args.variations,
-        custom_clips_dir=args.clips_dir
+        custom_clips_dir=args.clips_dir,
+        kick_style=args.kick_style
     )
 
 
