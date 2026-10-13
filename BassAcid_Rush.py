@@ -37,6 +37,17 @@ RUSH_STYLES = {
 }
 
 
+def default_output_stem(style: str = "rolling") -> str:
+    """
+    Nombre canónico de salida (sin timestamp) para un estilo dado.
+    Fuente única del nombre: lo usan este script, generate_all.py y gui_generator.py.
+    """
+    style = style.lower()
+    if style not in RUSH_STYLES:
+        style = "rolling"
+    return f"BassAcid_Rush_{style.capitalize()}"
+
+
 def generate_bass_acid_rush(
     bpm: float = 153.0,
     root_note: int = 53,       # F3 por defecto (tonalidad original de Aeryeen - Rush / Fa Menor)
@@ -58,7 +69,7 @@ def generate_bass_acid_rush(
     if style not in RUSH_STYLES:
         style = "rolling"
 
-    seq_name = f"BassAcid_Rush_{style.capitalize()}"
+    seq_name = default_output_stem(style)
     seq = MidiSequence(name=seq_name, bpm=bpm)
     track = seq.track
 
@@ -375,7 +386,7 @@ def generate_bass_acid_rush(
     # Definir ruta de guardado
     if output_path is None:
         output_dir = SCRIPT_DIR / "output"
-        output_path = build_timestamped_filename(f"{seq_name}.mid", directory=output_dir)
+        output_path = build_timestamped_filename(seq_name, directory=output_dir)
 
     saved_paths = seq.save(output_path, copy_to_bitwig=True)
     return saved_paths, notes_placed
@@ -394,9 +405,8 @@ def generate_all_rush_variations(
     results = []
     style_keys = ["rolling", "melodic_hook", "octave_screamer", "climax_drop"]
 
-    for idx, st in enumerate(style_keys, 1):
-        filename = f"06_BassAcid_Rush_{idx:02d}_{st.capitalize()}.mid"
-        out_file = build_timestamped_filename(filename, directory=output_dir)
+    for st in style_keys:
+        out_file = build_timestamped_filename(default_output_stem(st), directory=output_dir)
         paths, count = generate_bass_acid_rush(
             bpm=bpm,
             root_note=root_note,

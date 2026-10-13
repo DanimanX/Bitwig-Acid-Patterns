@@ -26,6 +26,10 @@ from midi_core import (
     build_timestamped_filename,
 )
 
+# Nombre canónico de salida (sin timestamp). Un script = un archivo con este nombre.
+# Lo reutilizan generate_all.py y gui_generator.py para no divergir.
+DEFAULT_OUTPUT_STEM = "BassAcid_Rolling_303"
+
 
 def generate_bass_acid(
     bpm: float = 155.0,
@@ -117,7 +121,7 @@ def generate_bass_acid(
 
     if output_path is None:
         output_dir = SCRIPT_DIR / "output"
-        output_path = build_timestamped_filename("BassAcid_Rolling_303.mid", directory=output_dir)
+        output_path = build_timestamped_filename(DEFAULT_OUTPUT_STEM, directory=output_dir)
 
     saved = seq.save(output_path, copy_to_bitwig=True)
     return saved, notes_placed

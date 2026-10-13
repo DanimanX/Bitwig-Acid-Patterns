@@ -1,180 +1,106 @@
-# Bitwig Studio - Generador de Secuencias MIDI Acid Techno (155 BPM)
+# Bitwig Studio — Generador de Secuencias MIDI Acid Techno (155 BPM)
 
-Este conjunto de scripts replica y extiende la lógica algorítmica de los scripts de Renoise (`.lua`) para **Bitwig Studio**, generando secuencias estándar `.mid` de 4 compases (64 semicorcheas).
+Scripts que replican y extienden la lógica de los scripts de Renoise (`.lua`) para **Bitwig Studio**. Generan clips `.mid` de bajo ácido, bombo y hi-hats (SMF formato 0, 480 PPQ).
 
-Los archivos se exportan automáticamente en dos lugares:
-1. **Localmente**: En la carpeta `output/`.
-2. **Biblioteca de Bitwig**: En la carpeta de Clips de Bitwig según tu sistema operativo (`macOS`, `Linux` o `Windows`), accesibles al instante desde el navegador lateral de Bitwig (Pestaña *Clips* o *My Library* -> *Acid_Sequences*).
+Cada script escribe el clip en dos sitios:
+
+1. **`output/`** (local).
+2. **Biblioteca de Bitwig** (`.../Library/Clips/Acid_Sequences/`), visible al instante en el navegador lateral (*Clips* → *Acid_Sequences*).
+
+El nombre sigue el formato `YYYYMMDDHHMM_<nombre>.mid`: **un archivo por script**. Si repites dentro del mismo minuto, se sobrescribe.
+
+Los scripts marcados **+ `.lua`** tienen su gemelo original para Renoise.
 
 ---
 
-## 🌍 Detección Multiplataforma Inteligente (macOS vs Linux)
+## Scripts
 
-El proyecto detecta automáticamente el sistema operativo y gestiona las rutas correspondientes en [bitwig_config.json](bitwig_config.json) sin conflictos (incluso al sincronizar con Insync / Google Drive entre varias máquinas):
-
-| Sistema Operativo | Ruta por Defecto de Bitwig Clips |
+| Script | Genera |
 |---|---|
-| **macOS (Mac)** | `~/Documents/Bitwig Studio/Library/Clips/Acid_Sequences/` |
-| **Linux** | `~/Bitwig Studio/Library/Clips/Acid_Sequences/` *(o `~/Documents/...` si existe)* |
-| **Windows** | `~/Documents/Bitwig Studio/Library/Clips/Acid_Sequences/` |
-
-### ¿Cómo cambiar o confirmar la carpeta de Clips?
-- **Desde la interfaz gráfica:** Abre `python3 gui_generator.py` y haz clic en el botón **"Cambiar..."**.
-- **Desde la terminal:** Ejecuta `python3 generate_all.py --configure` (o `python3 midi_core.py`) para confirmar o ingresar una ruta personalizada.
-- **Por parámetro directo:** `python3 generate_all.py --clips-dir "/tu/ruta/personalizada"`.
-
----
-
-## 🎛️ Scripts Disponibles
-
-| Script Python | Script Renoise Original | Descripción / Características |
-|---|---|---|
-| [`BassAcid.py`](BassAcid.py) | `BassAcid.lua` | **Rolling 303 clásico**: Escala pentatónica menor en Re, huecos en el beat para dejar pegar el Kick, acentos de volumen y slides (legato overlap). Fill en el compás 4. |
-| [`BassAcid_Aggressive.py`](BassAcid_Aggressive.py) | `BassAcid_Aggressive.lua` | **Hard Acid estilo Marie Vaunt / Verknipt**: Intervalos frigios y de tritono, acentos extremos (127 vs 80 vs 54), screeches de doble octava (+24 semitonos) y fill ametralladora. |
-| [`BassAcid_PreDrop.py`](BassAcid_PreDrop.py) | `BassAcid_PreDrop.lua` | **Build-up & Pre-Drop**: Tensión espaciada en compás 1, rolling en compás 2, riser ascendente de 2 octavas en compás 3, ráfaga ametralladora en compás 4 y **silencio absoluto en los últimos 2 tiempos** antes del drop. |
-| [`BassAcid_Rush.py`](BassAcid_Rush.py) | — | **Estilo KI/KI @ Elementenstraat (Aeryeen "Rush", 1:17:04)**: 4 variaciones eufóricas de Fast Acid Trance / Neo-Acid (`rolling`, `melodic_hook`, `octave_screamer`, `climax_drop`), galopes continuos de 16ths, rebote de octavas y slides 303. |
-| [`acid_kick_pattern.py`](acid_kick_pattern.py) | `acid_kick_pattern.lua` | **Hard Techno Kick Dinámico (4 compases)**: Fraseo evolutivo de 4 compases, micro-humanización (timing y velocity), ghost/rumble notes y 6 estilos de Hard Techno (`hybrid`, `rolling`, `syncopated`, `stutter`, `offbeat_push`, `predrop_break`). |
-| [`acid_hat_pattern.py`](acid_hat_pattern.py) | `acid_hat_pattern.lua` | **Hi-Hats Rave / Festival**: Contratiempos abiertos potentes (offbeats), galope de semicorcheas con micro-delay analógico (swing) y redobles en compases 2 y 4. |
-| [`generate_all.py`](generate_all.py) | — | **Generador Maestro**: Genera el kit completo de 6 secuencias de una sola vez o con múltiples variaciones. |
-| [`gui_generator.py`](gui_generator.py) | — | **Interfaz Gráfica de Escritorio**: Ventana interactiva con selector de SO, botón de cambio de carpeta y ajuste de BPM / tono / estilos. |
+| [`BassAcid.py`](BassAcid.py) + `.lua` | **Rolling 303** clásico: pentatónica menor en Re, huecos en el beat para el kick, acentos y slides. Fill en el compás 4. |
+| [`BassAcid_Aggressive.py`](BassAcid_Aggressive.py) + `.lua` | **Hard Acid (Marie Vaunt / Verknipt)**: frigio y tritono, acentos extremos, screams de doble octava (+24) y fill ametralladora. |
+| [`BassAcid_Blade.py`](BassAcid_Blade.py) + `.lua` | **Blade (16 notas)**: un compás con 16 semicorcheas sin huecos, al estilo del acid techno de *Blade* (1998) / New Order – "Confusion" (Pump Panel Reconstruction Mix). Acentos en los 4 pulsos, stabs de octava y quinta con slide, espiral ascendente final. |
+| [`BassAcid_Rush.py`](BassAcid_Rush.py) | **KI/KI @ Elementenstraat**: 4 variaciones (`rolling`, `melodic_hook`, `octave_screamer`, `climax_drop`), galopes de 16ths y rebotes de octava. |
+| [`acid_kick_pattern.py`](acid_kick_pattern.py) + `.lua` | **Kick Hard Techno** de 4 compases: fraseo evolutivo, humanización, ghost/rumble y 6 estilos (ver abajo). |
+| [`acid_hat_pattern.py`](acid_hat_pattern.py) + `.lua` | **Hi-Hats Rave**: offbeats abiertos, galope de semicorcheas con swing y redobles en compases 2 y 4. |
+| [`generate_all.py`](generate_all.py) | **Generador maestro**: el kit completo de 6 clips de una sola vez. |
+| [`gui_generator.py`](gui_generator.py) | **GUI (tkinter)**: botones por patrón, kit completo, selector de SO / BPM / tono y carpeta de Clips. |
 
 ---
 
-## 🎼 Nomenclatura de Notas y Parámetro `--root`
+## Uso
 
-El parámetro `--root` (y `--note` en los patrones de bombo/hi-hat) acepta tres formatos, siempre con la **numeración científica de octavas (Do central C4 = 60, estándar MIDI)**:
+**GUI (recomendado)**
 
-| Formato | Ejemplo | Resultado MIDI |
-|---|---|---|
-| Número MIDI | `--root 50` | 50 |
-| Nota (notación científica) | `--root D3` | 50 |
-| Nota con guion (estilo tracker) | `--root D-3` | 50 |
-
-La raíz por defecto, **MIDI 50 = D3**, coincide con el Kick afinado en Re.
-
-> [!IMPORTANT]
-> Los nombres de nota usan **C4 = 60** (Do central). Por tanto `D3` (y `D-3`) = MIDI 50, mientras que `D-2` = MIDI 38. Los scripts `.lua` originales rotulaban MIDI 50 como "D-2" bajo otra convención de octavas (C3 = 60); aquí se unificó a la numeración estándar MIDI.
-
----
-
-## 🚀 Modos de Uso
-
-### 1. Interfaz Gráfica (Recomendado)
-Para abrir la ventana gráfica interactiva:
 ```bash
 python3 gui_generator.py
 ```
-Haz clic en cualquier botón o en **"GENERAR KIT COMPLETO"** para crear las secuencias. Puedes abrir la carpeta de Clips en Finder o tu explorador de archivos con el botón inferior.
 
----
+**Kit completo**
 
-### 2. Generar el Kit Completo por Terminal
 ```bash
 python3 generate_all.py
-```
-O con parámetros personalizados y estilo de bombo:
-```bash
 python3 generate_all.py --bpm 155 --root 50 --kick-style stutter --variations 3
 ```
 
-Reconfigurar la carpeta de Clips:
-```bash
-python3 generate_all.py --configure
-```
-
----
-
-### 3. Variaciones de Kick Hard Techno Disponibles
-
-| Estilo | Flag | Descripción Musical |
-|---|---|---|
-| **Híbrido Evolutivo** *(default)* | `--style hybrid` | Progresión completa de 4 compases: base sólida (compás 1), síncopa en semicorchea 6 (compás 2), máxima tensión (compás 3) y redoble ametralladora en fusas (*32nd notes*) en compás 4. |
-| **Rolling Rumble** | `--style rolling` | Sub-kick continuo en semicorcheas (pasos 2, 3 y 4 de cada tiempo) con velocidades escalonadas para el clásico efecto *rolling bassline*. |
-| **Síncopa Industrial** | `--style syncopated` | Dobles golpes de bombo en contratiempos (pasos 6 y 14) con cross-accents en compases pares. |
-| **Schranz Stutter** | `--style stutter` | Ráfagas de fusas ultra rápidas (ráfagas ametralladora de 4 notas en *32nd notes*) en compases 2 y 4 (estilo *Verknipt / Klangkuenstler*). |
-| **Offbeat Push** | `--style offbeat_push` | Bombos contundentes en las corcheas a contratiempo (pasos 2, 6, 10, 14) que empujan el groove hacia adelante. |
-| **Pre-Drop Break** | `--style predrop_break` | Compases 1 al 3 a máxima potencia y compás 4 con **silencio absoluto en los últimos 2 tiempos** antes del drop. |
-
----
-
-### 4. Generar Patrones Individuales
+**Patrones individuales**
 
 ```bash
-# Bajo 303 Rolling
 python3 BassAcid.py --bpm 155 --root 50
-
-# Bajo Agresivo
 python3 BassAcid_Aggressive.py --bpm 155 --root 50
-
-# Pre-Drop con silencio
-python3 BassAcid_PreDrop.py --bpm 155 --root 50
-
-# Bajo Acid estilo KI/KI @ Warehouse Elementenstraat (Aeryeen "Rush", 1:17:04):
-# Pack con las 4 variaciones (Rolling, Hook, Screamer, Climax Drop):
-python3 BassAcid_Rush.py --style all --root F3 --bpm 153
-
-# Variaciones individuales:
-python3 BassAcid_Rush.py --style rolling --root F3 --bpm 153
-python3 BassAcid_Rush.py --style melodic_hook --root F3 --bpm 153
-python3 BassAcid_Rush.py --style octave_screamer --root F3 --bpm 153
-python3 BassAcid_Rush.py --style climax_drop --root F3 --bpm 153
-
-# Kick Hard Techno dinámico (Estilo híbrido por defecto, 4 compases)
+python3 BassAcid_Blade.py --bpm 155 --root 50
+python3 BassAcid_Rush.py --style all --root F3 --bpm 153    # pack de 4 variaciones
 python3 acid_kick_pattern.py --style hybrid --bars 4 --bpm 155
-
-# Kick con Rumble continuo (Rolling)
-python3 acid_kick_pattern.py --style rolling --bars 4
-
-# Kick con ráfagas Schranz / Stutter (fusas / semicorcheas rápidas)
-python3 acid_kick_pattern.py --style stutter --bars 4
-
-# Kick Sincopado o con contratiempos pesados (Offbeat Push)
-python3 acid_kick_pattern.py --style syncopated --bars 4
-python3 acid_kick_pattern.py --style offbeat_push --bars 4
-
-# Kick de Pre-Drop (silencio en compás 4 antes del drop)
-python3 acid_kick_pattern.py --style predrop_break --bars 4
-
-# Hi-Hats (Nota 42 = F#1 Closed Hat)
-python3 acid_hat_pattern.py --bpm 155 --note 42
-
-# La raíz admite número MIDI o nombre de nota (D3 y D-3 equivalen a MIDI 50)
-python3 BassAcid.py --bpm 155 --root D3
+python3 acid_hat_pattern.py --bpm 155 --note 42             # 42 = F#1 closed hat
 ```
 
----
+### Estilos de kick (`--kick-style` en el kit / `--style` individual)
 
-## 🎹 Cómo usar los clips en Bitwig Studio
-
-1. **Abrir Bitwig Studio**.
-2. En el panel navegador de la derecha (o presiona `F1` / abre el navegador de archivos):
-   - Ve a **"Clips"** o **"My Library"** -> **"Acid_Sequences"**.
-3. Verás todos los archivos `.mid` generados (con prefijo de fecha/hora `YYYYMMDDHHMM_`):
-   - `01_BassAcid_Rolling_303.mid`
-   - `02_BassAcid_Aggressive.mid`
-   - `03_BassAcid_PreDrop_Build.mid`
-   - `04_Acid_Kick_<Estilo>_4x4.mid` (p. ej. `04_Acid_Kick_Hybrid_4x4.mid`; el estilo depende de `--kick-style`)
-   - `05_Acid_HiHat_Rave.mid`
-4. **Arrastra y suelta** cualquier clip directamente sobre una pista de instrumento en la vista *Arranger* o en el *Clip Launcher*.
-
-> [!TIP]
-> **Slides y Acentos 303 en VSTs / Bitwig:**
-> - Los **slides** se programan con solapamiento *legato* (>100% de duración de paso). En sintes como *AudioRealism ABL3*, *D16 Phoscyon 2*, *Arturia Acid V*, *Roland TB-303* o el propio *Polymer* de Bitwig (modo mono con Glide activado), esto activa automáticamente el portamento suave entre notas.
-> - Los **acentos** se activan por velocidad MIDI (127 para acento, 80 para normal, 54 para notas fantasma).
+- `hybrid` *(default)* — evolución de 4 compases: base, síncopa, tensión máxima y redoble en fusas.
+- `rolling` — sub-kick continuo en semicorcheas (rolling bassline).
+- `syncopated` — bombos dobles en contratiempos con cross-accents.
+- `stutter` — ráfagas de fusas (estilo Verknipt / Klangkuenstler).
+- `offbeat_push` — bombos en las corcheas a contratiempo.
+- `predrop_break` — compases 1-3 a tope y silencio en los 2 últimos tiempos del compás 4.
 
 ---
 
-## 🔧 Notas Técnicas y Cambios Recientes
+## Raíz y nomenclatura de notas
 
-**Dependencias:** solo la biblioteca estándar de Python 3. El motor [`midi_core.py`](midi_core.py) no importa nada externo; la GUI requiere `tkinter` (incluido en la mayoría de instalaciones de Python).
+`--root` (y `--note`) acepta número MIDI o nombre de nota, con **C4 = 60** (Do central): `50` = `D3` = `D-3`.
 
-**Características del motor MIDI:**
-- Escribe **SMF formato 0** (una sola pista) a 480 PPQ, en el **canal 1** (índice MIDI 0) — compatible con Bitwig y con drum machines.
-- Los **slides** 303 se codifican como solapamiento *legato* (>100% de duración de paso); los **acentos**, vía velocidad MIDI.
-- Nombres de archivo con prefijo `YYYYMMDDHHMM_`; ante colisión dentro del mismo minuto añade un contador incremental (`..._1.mid`, `..._2.mid`) para no sobreescribir.
+La raíz por defecto es **MIDI 50 = D3**, afinada con el kick en Re. Los `.lua` originales rotulaban MIDI 50 como "D-2" (convención C3 = 60); aquí se unificó al estándar MIDI.
 
-**Cambios aplicados:**
-- `note_name_to_midi` ahora acepta **cadenas numéricas** (`"50"`) y el **guion como separador** (`"D-3"`); las entradas inválidas lanzan `ValueError` con mensaje claro.
-- Importar `midi_core` **ya no lee ni escribe** `bitwig_config.json` (la ruta de Clips se resuelve de forma perezosa).
-- La GUI captura los errores de generación y los muestra en un diálogo y en la barra de estado.
-- Se eliminó código sin uso (pitch bend no utilizado, ramas inalcanzables y imports sin uso).
+---
+
+## Carpeta de Clips (multiplataforma)
+
+Se resuelve por SO desde [`bitwig_config.json`](bitwig_config.json), sin conflictos al sincronizar entre máquinas:
+
+| SO | Ruta por defecto |
+|---|---|
+| macOS | `~/Documents/Bitwig Studio/Library/Clips/Acid_Sequences/` |
+| Linux | `~/Bitwig Studio/Library/Clips/Acid_Sequences/` (o `~/Documents/...` si existe) |
+| Windows | `~/Documents/Bitwig Studio/Library/Clips/Acid_Sequences/` |
+
+Para cambiarla: botón **"Cambiar…"** en la GUI, `python3 generate_all.py --configure`, o `--clips-dir "/ruta"`.
+
+---
+
+## Cómo usar los clips en Bitwig
+
+1. Navegador lateral → **Clips / My Library** → **Acid_Sequences**.
+2. Arrastra el `.mid` a una pista de instrumento (*Arranger* o *Clip Launcher*).
+
+> **Slides y acentos 303**
+> - **Slides**: se codifican como solapamiento *legato* (>100% del paso). En sintes como ABL3, Phoscyon 2, Arturia Acid V, Roland TB-303 o Polymer (mono + Glide) activan el portamento.
+> - **Acentos**: por velocidad MIDI (p. ej. 127 acento, ~80-100 normal, ~54-76 fantasma, según el patrón).
+
+---
+
+## Notas técnicas
+
+- **Dependencias**: solo la librería estándar de Python 3 ([`midi_core.py`](midi_core.py) no importa nada externo); la GUI necesita `tkinter`.
+- **Salida MIDI**: SMF formato 0, una pista, 480 PPQ, canal 1 (índice 0).
+- **Config perezosa**: importar `midi_core` no lee ni escribe `bitwig_config.json`; la ruta se resuelve al usarla.
+- **Aleatoriedad**: los scripts de bajo (`BassAcid.py`, `BassAcid_Aggressive.py`, `BassAcid_Rush.py`) usan azar sin semilla, así que cada ejecución sobrescribe con contenido distinto.

@@ -158,4 +158,3 @@ Bitwig/
 
 # Generated MIDI outputs
 output/*.mid
-!output/202610121756_*.mid

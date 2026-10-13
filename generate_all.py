@@ -28,12 +28,23 @@ from midi_core import (
     get_timestamp_prefix,
     build_timestamped_filename,
 )
-from BassAcid import generate_bass_acid
-from BassAcid_Aggressive import generate_bass_acid_aggressive
-from BassAcid_PreDrop import generate_bass_acid_predrop
-from BassAcid_Rush import generate_bass_acid_rush
-from acid_kick_pattern import generate_acid_kick
-from acid_hat_pattern import generate_acid_hat
+from BassAcid import generate_bass_acid, DEFAULT_OUTPUT_STEM as BASS_ROLLING_STEM
+from BassAcid_Aggressive import generate_bass_acid_aggressive, DEFAULT_OUTPUT_STEM as BASS_AGGRESSIVE_STEM
+from BassAcid_Blade import generate_bass_acid_blade, DEFAULT_OUTPUT_STEM as BASS_BLADE_STEM
+from BassAcid_Rush import generate_bass_acid_rush, default_output_stem as rush_output_stem
+from acid_kick_pattern import generate_acid_kick, default_output_stem as kick_output_stem
+from acid_hat_pattern import generate_acid_hat, DEFAULT_OUTPUT_STEM as HAT_STEM
+
+
+def resolve_output(stem: str, suffix: str, output_dir: Path, timestamp: str, use_timestamp: bool) -> Path:
+    """
+    Resuelve la ruta de salida usando el nombre canónico del script (un archivo por script),
+    idéntico al que genera cada script de forma individual.
+    """
+    name = f"{stem}{suffix}"
+    if use_timestamp:
+        return build_timestamped_filename(name, directory=output_dir, timestamp=timestamp)
+    return output_dir / f"{name}.mid"
 
 
 def generate_full_kit(
@@ -72,36 +83,36 @@ def generate_full_kit(
         print(f"--- [Variación {v}/{variations}] Generando archivos MIDI ---")
 
         # 1. BassAcid (Rolling 303)
-        b1_out = build_timestamped_filename(f"01_BassAcid_Rolling_303{suffix}.mid", directory=output_dir, timestamp=ts) if use_timestamp else output_dir / f"01_BassAcid_Rolling_303{suffix}.mid"
+        b1_out = resolve_output(BASS_ROLLING_STEM, suffix, output_dir, ts, use_timestamp)
         b1_paths, b1_notes = generate_bass_acid(
             bpm=bpm,
             root_note=root_midi,
             total_bars=4,
             output_path=b1_out
         )
-        print(f"  [1/5] {b1_out.name} ({b1_notes} notas)")
+        print(f"  [1/6] {b1_out.name} ({b1_notes} notas)")
 
         # 2. BassAcid Aggressive (Marie Vaunt style)
-        b2_out = build_timestamped_filename(f"02_BassAcid_Aggressive{suffix}.mid", directory=output_dir, timestamp=ts) if use_timestamp else output_dir / f"02_BassAcid_Aggressive{suffix}.mid"
+        b2_out = resolve_output(BASS_AGGRESSIVE_STEM, suffix, output_dir, ts, use_timestamp)
         b2_paths, b2_notes = generate_bass_acid_aggressive(
             bpm=bpm,
             root_note=root_midi,
             total_bars=4,
             output_path=b2_out
         )
-        print(f"  [2/5] {b2_out.name} ({b2_notes} notas)")
+        print(f"  [2/6] {b2_out.name} ({b2_notes} notas)")
 
-        # 3. BassAcid PreDrop (Build-up & Silence)
-        b3_out = build_timestamped_filename(f"03_BassAcid_PreDrop_Build{suffix}.mid", directory=output_dir, timestamp=ts) if use_timestamp else output_dir / f"03_BassAcid_PreDrop_Build{suffix}.mid"
-        b3_paths, b3_notes = generate_bass_acid_predrop(
+        # 3. BassAcid Blade (16 notas, acid techno estilo Blade)
+        b3_out = resolve_output(BASS_BLADE_STEM, suffix, output_dir, ts, use_timestamp)
+        b3_paths, b3_notes = generate_bass_acid_blade(
             bpm=bpm,
             root_note=root_midi,
             output_path=b3_out
         )
-        print(f"  [3/5] {b3_out.name} ({b3_notes} notas)")
+        print(f"  [3/6] {b3_out.name} ({b3_notes} notas)")
 
         # 4. Acid Kick (Hard Techno dinámico según estilo)
-        k_out = build_timestamped_filename(f"04_Acid_Kick_{kick_style.capitalize()}_4x4{suffix}.mid", directory=output_dir, timestamp=ts) if use_timestamp else output_dir / f"04_Acid_Kick_{kick_style.capitalize()}_4x4{suffix}.mid"
+        k_out = resolve_output(kick_output_stem(kick_style, 4), suffix, output_dir, ts, use_timestamp)
         k_paths, k_main, k_ghost = generate_acid_kick(
             bpm=bpm,
             note=36,
@@ -109,10 +120,10 @@ def generate_full_kit(
             style=kick_style,
             output_path=k_out
         )
-        print(f"  [4/5] {k_out.name} ({k_main + k_ghost} hits)")
+        print(f"  [4/6] {k_out.name} ({k_main + k_ghost} hits)")
 
         # 5. Acid Hi-Hats (Offbeat + Rolling)
-        h_out = build_timestamped_filename(f"05_Acid_HiHat_Rave{suffix}.mid", directory=output_dir, timestamp=ts) if use_timestamp else output_dir / f"05_Acid_HiHat_Rave{suffix}.mid"
+        h_out = resolve_output(HAT_STEM, suffix, output_dir, ts, use_timestamp)
         h_paths, h_hits = generate_acid_hat(
             bpm=bpm,
             note=42,
@@ -122,7 +133,7 @@ def generate_full_kit(
 
         # 6. BassAcid Rush (KI/KI @ Elementenstraat 1:17:04 style)
         if include_rush:
-            r_out = build_timestamped_filename(f"06_BassAcid_Rush_{rush_style.capitalize()}{suffix}.mid", directory=output_dir, timestamp=ts) if use_timestamp else output_dir / f"06_BassAcid_Rush_{rush_style.capitalize()}{suffix}.mid"
+            r_out = resolve_output(rush_output_stem(rush_style), suffix, output_dir, ts, use_timestamp)
             r_paths, r_notes = generate_bass_acid_rush(
                 bpm=bpm,
                 root_note=root_midi,

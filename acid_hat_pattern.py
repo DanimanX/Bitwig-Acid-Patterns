@@ -26,6 +26,9 @@ from midi_core import (
     build_timestamped_filename,
 )
 
+# Nombre canónico de salida (sin timestamp). Un script = un archivo con este nombre.
+DEFAULT_OUTPUT_STEM = "Acid_HiHat_Rave_16ths"
+
 
 def generate_acid_hat(
     bpm: float = 155.0,
@@ -100,7 +103,7 @@ def generate_acid_hat(
 
     if output_path is None:
         output_dir = SCRIPT_DIR / "output"
-        output_path = build_timestamped_filename("Acid_HiHat_Rave_16ths.mid", directory=output_dir)
+        output_path = build_timestamped_filename(DEFAULT_OUTPUT_STEM, directory=output_dir)
 
     saved = seq.save(output_path, copy_to_bitwig=True)
     return saved, hits_count

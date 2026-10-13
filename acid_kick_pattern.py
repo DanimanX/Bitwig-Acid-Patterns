@@ -44,6 +44,17 @@ KICK_STYLES = [
 ]
 
 
+def default_output_stem(style: str = "hybrid", total_bars: int = 4) -> str:
+    """
+    Nombre canónico de salida (sin timestamp) para un estilo y nº de compases dados.
+    Fuente única del nombre: lo usan este script, generate_all.py y gui_generator.py.
+    """
+    style_clean = style.lower().strip()
+    if style_clean not in KICK_STYLES:
+        style_clean = "hybrid"
+    return f"Acid_Kick_{style_clean.capitalize()}_{total_bars}Bars"
+
+
 def generate_acid_kick(
     bpm: float = 155.0,
     note: int = 36,  # MIDI 36 (C1 - Bombo estándar Drum Machine / Sampler)
@@ -69,7 +80,7 @@ def generate_acid_kick(
     if style_clean not in KICK_STYLES:
         style_clean = "hybrid"
 
-    seq_name = f"Acid_Kick_{style_clean.capitalize()}_{total_bars}Bars"
+    seq_name = default_output_stem(style_clean, total_bars)
     seq = MidiSequence(name=seq_name, bpm=bpm)
     track = seq.track
 
@@ -210,7 +221,7 @@ def generate_acid_kick(
     # Guardar archivo MIDI
     if output_path is None:
         output_dir = SCRIPT_DIR / "output"
-        out_name = f"Acid_Kick_{style_clean.capitalize()}_{total_bars}Bars.mid"
+        out_name = default_output_stem(style_clean, total_bars)
         output_path = build_timestamped_filename(out_name, directory=output_dir)
 
     saved_paths = seq.save(output_path, copy_to_bitwig=True)

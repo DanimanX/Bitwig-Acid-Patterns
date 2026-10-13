@@ -218,9 +218,11 @@ def build_timestamped_filename(
     timestamp: Optional[str] = None
 ) -> Path:
     """
-    Construye una ruta con prefijo de timestamp YYYYMMDDHHMM_.
-    Si el archivo ya existe en ese mismo minuto, añade un contador incremental
-    (_1, _2, ...) antes de la extensión para no sobreescribir.
+    Construye la ruta de salida con el formato `YYYYMMDDHHMM_<nombre>.mid`.
+
+    Un script produce UN único archivo por ejecución: si ya existe un archivo con ese mismo
+    timestamp, se sobrescribe. No se añaden sufijos (_1, _2, ...) porque romperían el formato
+    de nombre fecha + nombre del fichero generado.
     """
     if timestamp is None:
         timestamp = get_timestamp_prefix()
@@ -228,17 +230,10 @@ def build_timestamped_filename(
         timestamp += "_"
 
     clean_name = base_name if base_name.endswith(".mid") else f"{base_name}.mid"
-    stem = clean_name[:-len(".mid")]
     dir_path = Path(directory) if directory else Path(".")
     dir_path.mkdir(parents=True, exist_ok=True)
 
-    target_path = dir_path / f"{timestamp}{clean_name}"
-    counter = 1
-    while target_path.exists():
-        target_path = dir_path / f"{timestamp}{stem}_{counter}.mid"
-        counter += 1
-
-    return target_path
+    return dir_path / f"{timestamp}{clean_name}"
 
 
 def encode_vlq(value: int) -> bytes:
