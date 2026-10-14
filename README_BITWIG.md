@@ -15,14 +15,15 @@ El nombre sigue el formato `YYYYMMDDHHMM_<nombre>.mid`: **un archivo por script*
 
 | Script | Genera |
 |---|---|
+| [`BassAcid_GiveMeAcid.py`](BassAcid_GiveMeAcid.py) | **Give Me Acid (Marie Vaunt & A\*S\*Y\*S @ 135 BPM)**: Peak-Time / Driving Acid Techno. 4 variaciones (`driving_lead`, `call_response`, `squelch_roller`, `climax_drop`), slides 303 legato, afinación en Si♭ (Bb2/46) y acentos con filtro abierto. |
 | [`BassAcid.py`](BassAcid.py) | **Rolling 303** clásico: pentatónica menor en Re, huecos en el beat para el kick, acentos y slides. Fill en el compás 4. |
 | [`BassAcid_Aggressive.py`](BassAcid_Aggressive.py) | **Hard Acid (Marie Vaunt / Verknipt)**: frigio y tritono, acentos extremos, screams de doble octava (+24) y fill ametralladora. |
 | [`BassAcid_Blade.py`](BassAcid_Blade.py) | **Blade (16 notas)**: un compás con 16 semicorcheas sin huecos, al estilo del acid techno de *Blade* (1998) / New Order – "Confusion" (Pump Panel Reconstruction Mix). Acentos en los 4 pulsos, stabs de octava y quinta con slide, espiral ascendente final. |
 | [`BassAcid_Rush.py`](BassAcid_Rush.py) | **KI/KI @ Elementenstraat**: 4 variaciones (`rolling`, `melodic_hook`, `octave_screamer`, `climax_drop`), galopes de 16ths y rebotes de octava. |
 | [`acid_kick_pattern.py`](acid_kick_pattern.py) | **Kick Hard Techno** de 4 compases: fraseo evolutivo, humanización, ghost/rumble y 6 estilos (ver abajo). |
 | [`acid_hat_pattern.py`](acid_hat_pattern.py) | **Hi-Hats Rave**: offbeats abiertos, galope de semicorcheas con swing y redobles en compases 2 y 4. |
-| [`generate_all.py`](generate_all.py) | **Generador maestro**: el kit completo de 6 clips de una sola vez. |
-| [`gui_generator.py`](gui_generator.py) | **GUI (tkinter)**: botones por patrón, kit completo, selector de SO / BPM / tono y carpeta de Clips. |
+| [`generate_all.py`](generate_all.py) | **Generador maestro**: el kit completo de 7 clips de una sola vez. |
+| [`gui_generator.py`](gui_generator.py) | **GUI (tkinter)**: selector de estilo de bajo con auto-ajuste de BPM/tónica, botones por patrón, kit completo y carpeta de Clips. |
 
 ---
 
@@ -44,6 +45,7 @@ python3 generate_all.py --bpm 155 --root 50 --kick-style stutter --variations 3
 **Patrones individuales**
 
 ```bash
+python3 BassAcid_GiveMeAcid.py --style all --root Bb2 --bpm 135   # pack de 4 variaciones Give Me Acid
 python3 BassAcid.py --bpm 155 --root 50
 python3 BassAcid_Aggressive.py --bpm 155 --root 50
 python3 BassAcid_Blade.py --bpm 155 --root 50
